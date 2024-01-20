@@ -1,0 +1,9 @@
+#rust
+pkg/
+target/
+
+#www project
+node_modules
+dist
+
+.idea/
