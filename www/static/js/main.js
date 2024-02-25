@@ -14,13 +14,15 @@ const controls = new OrbitControls(camera, renderer.domElement);
 
 let scene = new THREE.Scene();
 let cube = initCube(scene);
-let steps_state = initSteps();
+let steps_state = initSteps(convertMovesToSteps(["L", "R"]));
 
 // todo: assign actual functions once possible
 document.getElementById("start").addEventListener("click", () => {
     let moves = null;
     while ((moves = steps_state.undo()) != null) {
-        moves.forEach(cube.rotateFace);
+        for (let index = 0; index < moves.length; index++){
+            cube.rotateFace(moves[index]);
+        }
     }
 });
 document.getElementById("prev").addEventListener("click", () => {
@@ -28,7 +30,12 @@ document.getElementById("prev").addEventListener("click", () => {
     if (moves == null) {
         return;
     }
+    for (let index = 0; index < moves.length; index++){
+        cube.rotateFace(moves[index]);
+    }
+    /*
     moves.forEach(cube.rotateFace);
+    */
 });
 document.getElementById("playPause").addEventListener("click", () => {
     //ToDo add a pause function

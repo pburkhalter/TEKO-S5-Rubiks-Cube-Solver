@@ -118,23 +118,22 @@ class Step {
     }
 }
 
-export function initSteps(){
-    return new Steps([]);
+export function initSteps(steps){
+    return new Steps(steps);
 }
 
 class Steps {
-    constructor() {
-        this.init();
+    constructor(steps) {
+        this.init(steps)
     }
 
-    init() {
+    init(steps) {
         this.index = 0;
-        this.steps = [];
+        this.steps = steps;
     }
 
     setSteps(steps){
-        this.index = 0
-        this.steps = steps;
+        this.init(steps);
     }
 
     do() {
@@ -149,13 +148,14 @@ class Steps {
     }
 
     undo() {
-        if (this.index <= this.steps.length) {
+        console.log(this.index);
+        console.log(this.steps.length);
+        if (this.index <= 0) {
             return null;
         }
 
         this.index -= 1;
-        let moves = this.steps[this.index].undo();
-        return moves
+        return this.steps[this.index].undo()
     }
 }
 
