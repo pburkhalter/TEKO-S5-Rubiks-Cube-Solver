@@ -170,6 +170,9 @@ class SubCube {
                 faceMesh.material = new THREE.MeshStandardMaterial({ color: newFaceColor.hex, side: THREE.DoubleSide });
                 faceMesh.userData.faceColorName = newFaceColor.name;
             }
+            else {
+                console.log("Cannot change center cube!");
+            }
         }
     }
 
