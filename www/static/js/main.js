@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import * as wasm from "wasm-rubiks-cube-solver";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
@@ -21,6 +22,52 @@ document.getElementById("playPause").addEventListener("click", () => { cube.rota
 document.getElementById("next").addEventListener("click", () => { cube.rotateFace("r"); });
 document.getElementById("end").addEventListener("click", () => { cube.rotateFace("d'"); });
 document.getElementById("reset").addEventListener("click", () => { cube.rotateFace("u'"); });
+
+// B = green
+// D = orange
+// F = red
+// L = yellow
+// R = white
+// U = blue
+
+document.getElementById("solve").addEventListener("click", () => {
+    let cube_state = cube.getCubeState();
+    let names = Object.getOwnPropertyNames(cube_state);
+
+    let map = {}
+    names.map(name => cube_state[name].map(mapFrontend2Backend).join("")).forEach(face => {
+        map[face[4]] = face
+    });
+
+    let cube_str = map["W"] + map["R"] + map["G"] + map["Y"] + map["O"] + map["B"];
+    console.log(JSON.stringify(cube_str));
+
+    let steps = wasm.solve_cube(cube_str);
+    console.log(JSON.stringify(steps));
+});
+
+function mapFrontend2Backend(color){
+    if (color === "green") {
+        return "G"
+    }
+    if (color === "orange") {
+        return "O"
+    }
+    if (color === "red") {
+        return "R"
+    }
+    if (color === "yellow") {
+        return "Y"
+    }
+    if (color === "white") {
+        return "W"
+    }
+    if (color === "blue") {
+        return "B"
+    }
+    throw new Error("The color name: '" + color + "' is invalid")
+}
+
 
 
 function onWindowResize() {
