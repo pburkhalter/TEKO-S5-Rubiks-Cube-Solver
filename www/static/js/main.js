@@ -57,12 +57,6 @@ document.getElementById("reset").addEventListener("click", () => {
     cube = initCube(scene);
     steps_state = initSteps();
 });
-document.getElementById("start").addEventListener("click", () => { console.log(cube.getCubeState()); });
-document.getElementById("prev").addEventListener("click", () => { cube.rotateFace("B"); });
-document.getElementById("playPause").addEventListener("click", () => { cube.rotateFace("L"); });
-document.getElementById("next").addEventListener("click", () => { cube.rotateFace("r"); });
-document.getElementById("end").addEventListener("click", () => { cube.rotateFace("d'"); });
-document.getElementById("reset").addEventListener("click", () => { cube.rotateFace("u'"); });
 
 // B = green
 // D = orange
