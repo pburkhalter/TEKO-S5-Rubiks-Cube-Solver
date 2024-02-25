@@ -65,15 +65,12 @@ class Cube {
             B: []   // Back face
         };
 
-        Object.keys(this.groups).forEach(group => {
-            this.groups[group].forEach(subCubeGroup => {
-                if (subCubeGroup.objGroup.userData.subCubeInstance) {
-                    const subCube = subCubeGroup.objGroup.userData.subCubeInstance;
-                    const faceColor = subCube.faces[this.faceMapping[group]].userData.faceColorName;
-                    cubeState[group].push(faceColor);
-                }
-            });
-        });
+        for (const [groupName, group] of Object.entries(this.groups)) {
+            for (const subCube of group) {
+                const faceColor = subCube.faces[this.faceMapping[groupName]].userData.faceColorName;
+                cubeState[groupName].push(faceColor);
+            }
+        }
 
         return cubeState;
     }
