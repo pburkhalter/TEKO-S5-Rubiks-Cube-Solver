@@ -4,22 +4,57 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { initCube, animateCube, onMouseClick } from './controls.js';
+import {initSteps, convertToMove, convertMovesToSteps} from './steps.js';
 import config from '../config/config.json';
 
-const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true }); // Enable anti-aliasing
 const composer = new EffectComposer(renderer);
 const controls = new OrbitControls(camera, renderer.domElement);
-const cube = initCube(scene);
+
+let scene = new THREE.Scene();
+let cube = initCube(scene);
+let steps_state = initSteps();
 
 // todo: assign actual functions once possible
-document.getElementById("start").addEventListener("click", () => { cube.rotateFace("f"); });
-document.getElementById("prev").addEventListener("click", () => { cube.rotateFace("B"); });
-document.getElementById("playPause").addEventListener("click", () => { cube.rotateFace("L"); });
-document.getElementById("next").addEventListener("click", () => { cube.rotateFace("r"); });
-document.getElementById("end").addEventListener("click", () => { cube.rotateFace("d'"); });
-document.getElementById("reset").addEventListener("click", () => { cube.rotateFace("u'"); });
+document.getElementById("start").addEventListener("click", () => {
+    let moves = null;
+    while ((moves = steps_state.undo()) != null) {
+        moves.forEach(cube.rotateFace);
+    }
+});
+document.getElementById("prev").addEventListener("click", () => {
+    let moves = steps_state.undo();
+    if (moves == null) {
+        return;
+    }
+    moves.forEach(cube.rotateFace);
+});
+document.getElementById("playPause").addEventListener("click", () => {
+    //ToDo add a pause function
+    let move = null;
+    while((move = steps_state.do()) != null){
+        cube.rotateFace(move);
+    }
+});
+document.getElementById("next").addEventListener("click", () => {
+    let move = steps_state.do();
+    if (move == null) {
+        return;
+    }
+    cube.rotateFace(move);
+});
+document.getElementById("end").addEventListener("click", () => {
+    let move = null;
+    while((move = steps_state.do()) != null){
+        cube.rotateFace(move);
+    }
+});
+document.getElementById("reset").addEventListener("click", () => {
+    scene = new THREE.Scene();
+    cube = initCube(scene);
+    steps_state = initSteps();
+});
 
 // B = green
 // D = orange
@@ -38,10 +73,13 @@ document.getElementById("solve").addEventListener("click", () => {
     });
 
     let cube_str = map["W"] + map["R"] + map["G"] + map["Y"] + map["O"] + map["B"];
-    console.log(JSON.stringify(cube_str));
+    //console.log(JSON.stringify(cube_str));
 
-    let steps = wasm.solve_cube(cube_str);
-    console.log(JSON.stringify(steps));
+    let moves = wasm.solve_cube(cube_str);
+    //console.log(JSON.stringify(moves));
+
+    let steps = convertMovesToSteps(moves.map(convertToMove));
+    steps_state.setSteps(steps);
 });
 
 function mapFrontend2Backend(color){
