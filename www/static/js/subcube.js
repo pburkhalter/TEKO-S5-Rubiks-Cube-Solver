@@ -125,7 +125,7 @@ class SubCube {
         }
 
         return {
-            name: Object.keys(faceColors)[index],
+            name: Object.keys(faceColors).find(key => faceColors[key] === colorValue),
             hex: colorValue
         };
     }
