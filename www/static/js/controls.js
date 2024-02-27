@@ -29,6 +29,8 @@ export function onMouseClick(event, scene, camera) {
             const faceIndex = firstIntersectedObject.userData.faceIndex;
             const subCube = firstIntersectedObject.userData.parentSubCube;
 
+            console.log(subCube.objGroup.position)
+
             subCube.changeFaceColor(faceIndex);
         }
     }

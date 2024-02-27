@@ -37,7 +37,7 @@ class Cube {
                 for (let z = -1; z < 2; z++) {
                     if (x === 0 && y === 0 && z === 0) continue;
 
-                    const subCube = new SubCube(x, y, z, this.config.faceColors, this.config.cubeSize, this.config.cubeGap);
+                    const subCube = new SubCube(x, y, z, this.config.faceColors, this.config.cubeSize, this.config.cubeGap, this.scene);
                     this.masterGroup.add(subCube.objGroup);
 
                     // Add subCube references to the logical groups
@@ -166,6 +166,10 @@ class Cube {
         while (this.rotationGroup.children.length > 0) {
             const child = this.rotationGroup.children[0]
 
+            console.log("Raycastiiiiing");
+            console.log(child)
+            child.userData.subCubeInstance.castRayPerpendicularFromFace();
+
             // apply the group's matrix to the object's matrix to retain their rotated positions relative to the group
             child.applyMatrix4(this.rotationGroup.matrixWorld);
 
@@ -206,6 +210,8 @@ class Cube {
             if (z >= 1) this.groups.F.push(subCubeInstance);
         });
     }
+
+
 }
 
 export default Cube;

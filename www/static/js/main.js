@@ -6,11 +6,15 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { initCube, animateCube, onMouseClick } from './controls.js';
 import {initSteps, convertToMove, convertMovesToSteps} from './steps.js';
 import config from '../config/config.json';
+import {Skybox} from './skybox';
 
+const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true }); // Enable anti-aliasing
 const composer = new EffectComposer(renderer);
 const controls = new OrbitControls(camera, renderer.domElement);
+const skyBox = new Skybox(scene);
+const cube = initCube(scene);
 
 let scene = new THREE.Scene();
 let cube = initCube(scene);
