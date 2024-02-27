@@ -3,7 +3,7 @@ mod moves;
 mod utils;
 
 use crate::cube::{facelet::FaceletCube, solvers::pochmann::solve, sub::SubCube};
-use itertools::Itertools;
+use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -45,15 +45,15 @@ fn validate_cube(cube: &str) -> Result<(), JsValue> {
     }
 
     // Validate the cube string contains 9 of each color
-    cube.chars()
-        .group_by(|c| *c)
-        .into_iter()
-        .try_for_each(|(_, group)| {
-            if group.count() != 9 {
-                return Err(JsValue::from_str("Cube must contain 9 of each color"));
-            }
-            Ok(())
-        })?;
+    let mut counter = HashMap::with_capacity(6);
 
-    Ok(())
+    cube.chars()
+        .fold(&mut counter, |acc, c| {
+            *acc.entry(c).or_insert(0) += 1;
+            acc
+        })
+        .values()
+        .all(|&v| v == 9)
+        .then_some(Ok(()))
+        .unwrap_or_else(|| Err(JsValue::from_str("Cube must contain 9 of each color")))
 }
