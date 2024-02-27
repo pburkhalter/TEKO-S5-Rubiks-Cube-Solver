@@ -178,62 +178,50 @@ class SubCube {
         }
     }
 
-    castRayPerpendicularFromFace(mesh, faceIndex) {
-        // Ensure the mesh and its geometry are valid
-        if (!(mesh && mesh.geometry)) {
-            console.error('Invalid mesh or geometry.');
-            return;
+    castRayPerpendicularFromFace(mesh) {
+        // Assuming mesh is the face mesh and has userData indicating its orientation
+        const geometry = mesh.geometry;
+        const normal = new THREE.Vector3();
+
+        // Set the normal based on face orientation
+        // This is a simplified example; adjust based on your actual face orientation logic
+        switch (mesh.userData.faceIndex) {
+            // Assuming these faceIndex values correspond to your cube's faces
+            case FaceDirection.FRONT:
+            case FaceDirection.BACK:
+                normal.set(0, 0, mesh.userData.faceIndex === FaceDirection.FRONT ? 1 : -1);
+                break;
+            case FaceDirection.UP:
+            case FaceDirection.DOWN:
+                normal.set(0, mesh.userData.faceIndex === FaceDirection.UP ? 1 : -1, 0);
+                break;
+            case FaceDirection.RIGHT:
+            case FaceDirection.LEFT:
+                normal.set(mesh.userData.faceIndex === FaceDirection.RIGHT ? 1 : -1, 0, 0);
+                break;
         }
 
-        const geometry = mesh.geometry;
-        geometry.computeVertexNormals(); // Ensure vertex normals are computed
+        // Calculate the center of the face
+        // For simplicity, assuming the mesh's position is the center of the face
+        const center = mesh.position.clone();
 
-        // Calculate the midpoint of the face
-        const midpoint = this.calculateFaceMidpoint(geometry, faceIndex);
-
-        // Calculate the normal at the midpoint (average of vertex normals for the face)
-        const normal = this.calculateFaceNormal(geometry, faceIndex);
-
-        // Perform raycasting from the midpoint in the direction of the normal
-        const raycaster = new THREE.Raycaster(midpoint, normal);
+        // Perform raycasting from the center in the direction of the normal
+        const raycaster = new THREE.Raycaster(center, normal);
         const intersects = raycaster.intersectObjects(this.scene.children, true);
 
         // Process intersections
         if (intersects.length > 0) {
-            console.log('Intersection with skybox:', intersects[0].objGroup.userData.name);
+            for(const isect in intersects){
+                console.log(intersects[isect])
+                if('name' in intersects[isect].object.userData){
+                    if(intersects[isect].distance > 2){ // skybox is far away, so we ignore all near intersects...
+                        console.log("Found intersect with " + intersects[isect].object.userData.name + " Skybox")
+                    }
+                }
+            }
         } else {
             console.log('No intersections found.');
         }
-    }
-
-    calculateFaceMidpoint(geometry, faceIndex) {
-        const posAttribute = geometry.attributes.position;
-        const indexAttribute = geometry.index;
-        const indices = indexAttribute.array;
-        const v1 = new THREE.Vector3(), v2 = new THREE.Vector3(), v3 = new THREE.Vector3();
-
-        // Extract vertex positions
-        v1.fromBufferAttribute(posAttribute, indices[faceIndex * 3]);
-        v2.fromBufferAttribute(posAttribute, indices[faceIndex * 3 + 1]);
-        v3.fromBufferAttribute(posAttribute, indices[faceIndex * 3 + 2]);
-
-        // Calculate midpoint
-        return new THREE.Vector3().addVectors(v1, v2).add(v3).divideScalar(3);
-    }
-
-    calculateFaceNormal(geometry, faceIndex) {
-        const normalAttribute = geometry.attributes.normal;
-        const indexAttribute = geometry.index;
-        const indices = indexAttribute.array;
-        const n1 = new THREE.Vector3(), n2 = new THREE.Vector3(), n3 = new THREE.Vector3();
-
-        // Extract vertex normals
-        n1.fromBufferAttribute(normalAttribute, indices[faceIndex * 3]);
-        n2.fromBufferAttribute(normalAttribute, indices[faceIndex * 3 + 1]);
-        n3.fromBufferAttribute(normalAttribute, indices[faceIndex * 3 + 2]);
-
-        // Calculate average normal
-        return new THREE.Vector3().addVectors(n1, n2).add(n3).divideScalar(3).normalize();
     }
 }
 

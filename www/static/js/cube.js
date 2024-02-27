@@ -166,9 +166,11 @@ class Cube {
         while (this.rotationGroup.children.length > 0) {
             const child = this.rotationGroup.children[0]
 
-            console.log("Raycastiiiiing");
-            console.log(child)
-            child.userData.subCubeInstance.castRayPerpendicularFromFace();
+            for (const faceMesh in child.userData.subCubeInstance.objGroup.children){
+                child.userData.subCubeInstance.castRayPerpendicularFromFace(
+                    child.userData.subCubeInstance.objGroup.children[faceMesh]
+                );
+            }
 
             // apply the group's matrix to the object's matrix to retain their rotated positions relative to the group
             child.applyMatrix4(this.rotationGroup.matrixWorld);
