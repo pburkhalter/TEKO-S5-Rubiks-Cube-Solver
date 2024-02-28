@@ -44,24 +44,30 @@ export class Skybox {
         // Assign positions and rotations based on the direction
         switch (direction) {
             case FaceDirection.FRONT:
+                faceMesh.userData.name = "FRONT";
                 faceMesh.position.z = -500;
                 break;
             case FaceDirection.BACK:
+                faceMesh.userData.name = "BACK";
                 faceMesh.position.z = 500;
                 break;
             case FaceDirection.UP:
+                faceMesh.userData.name = "UP";
                 faceMesh.position.y = 500;
                 faceMesh.rotation.x = Math.PI / 2;
                 break;
             case FaceDirection.DOWN:
+                faceMesh.userData.name = "DOWN";
                 faceMesh.position.y = -500;
                 faceMesh.rotation.x = Math.PI / 2;
                 break;
             case FaceDirection.RIGHT:
+                faceMesh.userData.name = "RIGHT";
                 faceMesh.position.x = 500;
                 faceMesh.rotation.y = -Math.PI / 2;
                 break;
             case FaceDirection.LEFT:
+                faceMesh.userData.name = "LEFT";
                 faceMesh.position.x = -500;
                 faceMesh.rotation.y = Math.PI / 2;
                 break;

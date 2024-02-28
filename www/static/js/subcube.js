@@ -180,7 +180,6 @@ class SubCube {
 
     castRayPerpendicularFromFace(mesh) {
         // Assuming mesh is the face mesh and has userData indicating its orientation
-        const geometry = mesh.geometry;
         const normal = new THREE.Vector3();
 
         // Set the normal based on face orientation
@@ -212,16 +211,20 @@ class SubCube {
         // Process intersections
         if (intersects.length > 0) {
             for(const isect in intersects){
-                console.log(intersects[isect])
-                if('name' in intersects[isect].object.userData){
-                    if(intersects[isect].distance > 2){ // skybox is far away, so we ignore all near intersects...
-                        console.log("Found intersect with " + intersects[isect].object.userData.name + " Skybox")
-                    }
+                if('name' in intersects[isect].object.userData && intersects[isect].distance > 10){ // skybox is far away, so we ignore all near intersects...
+                    console.log("Found intersect with " + intersects[isect].object.userData.name + " Skybox")
+                    this.faces[name.toLowerCase()] = mesh
                 }
             }
         } else {
             console.log('No intersections found.');
         }
+    }
+
+    resetFacesToDefault() {
+        Object.keys(this.faces).forEach(face => {
+            this.faces[face] = null;
+        });
     }
 }
 

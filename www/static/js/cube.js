@@ -164,9 +164,11 @@ class Cube {
 
         // dissolve the group
         while (this.rotationGroup.children.length > 0) {
+            console.log("Processing new subCube...")
             const child = this.rotationGroup.children[0]
 
             for (const faceMesh in child.userData.subCubeInstance.objGroup.children){
+                console.log("Processing new faceMesh...")
                 child.userData.subCubeInstance.castRayPerpendicularFromFace(
                     child.userData.subCubeInstance.objGroup.children[faceMesh]
                 );
