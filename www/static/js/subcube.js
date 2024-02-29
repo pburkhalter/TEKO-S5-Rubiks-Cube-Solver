@@ -213,7 +213,8 @@ class SubCube {
             for(const isect in intersects){
                 if('name' in intersects[isect].object.userData && intersects[isect].distance > 10){ // skybox is far away, so we ignore all near intersects...
                     console.log("Found intersect with " + intersects[isect].object.userData.name + " Skybox")
-                    this.faces[name.toLowerCase()] = mesh
+                    const name = intersects[isect].object.userData.name.toLowerCase();
+                    this.faces[name] = mesh
                 }
             }
         } else {
