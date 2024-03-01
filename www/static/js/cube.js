@@ -67,7 +67,7 @@ class Cube {
 
         for (const [groupName, group] of Object.entries(this.groups)) {
             for (const subCube of group) {
-                const faceColor = subCube.faces[this.faceMapping[groupName]].userData.faceColorName;
+                const faceColor = subCube.faces[this.faceMapping[groupName]];
                 cubeState[groupName].push(faceColor);
             }
         }
@@ -167,12 +167,7 @@ class Cube {
             console.log("Processing new subCube...")
             const child = this.rotationGroup.children[0]
 
-            for (const faceMesh in child.userData.subCubeInstance.objGroup.children){
-                console.log("Processing new faceMesh...")
-                child.userData.subCubeInstance.castRayPerpendicularFromFace(
-                    child.userData.subCubeInstance.objGroup.children[faceMesh]
-                );
-            }
+            child.userData.subCubeInstance.updateFaceColors();
 
             // apply the group's matrix to the object's matrix to retain their rotated positions relative to the group
             child.applyMatrix4(this.rotationGroup.matrixWorld);

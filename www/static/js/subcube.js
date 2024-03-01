@@ -67,32 +67,32 @@ class SubCube {
         switch (index) {
             case FaceDirection.FRONT:
                 faceMesh.position.z = cubeSize / 2;
-                this.faces.front = faceMesh;
+                this.faces.front = color.name;
                 break;
             case FaceDirection.BACK:
                 faceMesh.position.z = -cubeSize / 2;
                 faceMesh.rotation.y = Math.PI;
-                this.faces.back = faceMesh;
+                this.faces.back = color.name;
                 break;
             case FaceDirection.UP:
                 faceMesh.position.y = cubeSize / 2;
                 faceMesh.rotation.x = -Math.PI / 2;
-                this.faces.up = faceMesh;
+                this.faces.up = color.name;
                 break;
             case FaceDirection.DOWN:
                 faceMesh.position.y = -cubeSize / 2;
                 faceMesh.rotation.x = Math.PI / 2;
-                this.faces.down = faceMesh;
+                this.faces.down = color.name;
                 break;
             case FaceDirection.RIGHT:
                 faceMesh.position.x = cubeSize / 2;
                 faceMesh.rotation.y = -Math.PI / 2;
-                this.faces.right = faceMesh;
+                this.faces.right = color.name;
                 break;
             case FaceDirection.LEFT:
                 faceMesh.position.x = -cubeSize / 2;
                 faceMesh.rotation.y = Math.PI / 2;
-                this.faces.left = faceMesh;
+                this.faces.left = color.name;
                 break;
         }
 
@@ -178,47 +178,51 @@ class SubCube {
         }
     }
 
-    castRayPerpendicularFromFace(mesh) {
-        // Assuming mesh is the face mesh and has userData indicating its orientation
-        const normal = new THREE.Vector3();
+    updateFaceColors() {
+        for (const mesh of this.objGroup.children) {
+            // Assuming mesh is the face mesh and has userData indicating its orientation
+            const normal = new THREE.Vector3();
 
-        // Set the normal based on face orientation
-        // This is a simplified example; adjust based on your actual face orientation logic
-        switch (mesh.userData.faceIndex) {
-            // Assuming these faceIndex values correspond to your cube's faces
-            case FaceDirection.FRONT:
-            case FaceDirection.BACK:
-                normal.set(0, 0, mesh.userData.faceIndex === FaceDirection.FRONT ? 1 : -1);
-                break;
-            case FaceDirection.UP:
-            case FaceDirection.DOWN:
-                normal.set(0, mesh.userData.faceIndex === FaceDirection.UP ? 1 : -1, 0);
-                break;
-            case FaceDirection.RIGHT:
-            case FaceDirection.LEFT:
-                normal.set(mesh.userData.faceIndex === FaceDirection.RIGHT ? 1 : -1, 0, 0);
-                break;
-        }
-
-        // Calculate the center of the face
-        // For simplicity, assuming the mesh's position is the center of the face
-        const center = mesh.position.clone();
-
-        // Perform raycasting from the center in the direction of the normal
-        const raycaster = new THREE.Raycaster(center, normal);
-        const intersects = raycaster.intersectObjects(this.scene.children, true);
-
-        // Process intersections
-        if (intersects.length > 0) {
-            for(const isect in intersects){
-                if('name' in intersects[isect].object.userData && intersects[isect].distance > 10){ // skybox is far away, so we ignore all near intersects...
-                    console.log("Found intersect with " + intersects[isect].object.userData.name + " Skybox")
-                    const name = intersects[isect].object.userData.name.toLowerCase();
-                    this.faces[name] = mesh
-                }
+            // Set the normal based on face orientation
+            // This is a simplified example; adjust based on your actual face orientation logic
+            switch (mesh.userData.faceIndex) {
+                // Assuming these faceIndex values correspond to your cube's faces
+                case FaceDirection.FRONT:
+                case FaceDirection.BACK:
+                    normal.set(0, 0, mesh.userData.faceIndex === FaceDirection.FRONT ? 1 : -1);
+                    break;
+                case FaceDirection.UP:
+                case FaceDirection.DOWN:
+                    normal.set(0, mesh.userData.faceIndex === FaceDirection.UP ? 1 : -1, 0);
+                    break;
+                case FaceDirection.RIGHT:
+                case FaceDirection.LEFT:
+                    normal.set(mesh.userData.faceIndex === FaceDirection.RIGHT ? 1 : -1, 0, 0);
+                    break;
             }
-        } else {
-            console.log('No intersections found.');
+
+            // Calculate the center of the face
+            // For simplicity, assuming the mesh's position is the center of the face
+            const center = mesh.position.clone();
+
+            // Perform raycasting from the center in the direction of the normal
+            const raycaster = new THREE.Raycaster(center, normal);
+            const intersects = raycaster.intersectObjects(this.scene.children, true);
+
+            // Process intersections
+            if (intersects.length > 0) {
+                for (const isect in intersects) {
+                    if ('name' in intersects[isect].object.userData && intersects[isect].distance > 10) { // skybox is far away, so we ignore all near intersects...
+                        console.log("Found intersect with " + intersects[isect].object.userData.name + " Skybox")
+                        const name = intersects[isect].object.userData.name.toLowerCase();
+                        // mesh.material.color = new THREE.Color("grey")
+
+                        this.faces[name] = mesh.userData.faceColorName
+                    }
+                }
+            } else {
+                console.log('No intersections found.');
+            }
         }
     }
 
