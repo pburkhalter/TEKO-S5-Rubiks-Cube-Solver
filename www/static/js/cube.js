@@ -75,24 +75,6 @@ class Cube {
         return cubeState;
     }
 
-    // TODO: Check if this actually works...
-    setCubeState(newState) {
-        Object.keys(this.groups).forEach(group => {
-            this.groups[group].forEach((subCube, index) => {
-                const faceDirection = this.faceMapping[group];
-                const newColorName = newState[group][index];
-                const newColorValue = this.config.faceColors[newColorName];
-
-                if (subCube.faces[faceDirection]) {
-                    // Update the material of the corresponding face
-                    subCube.faces[faceDirection].material.color.set(newColorValue);
-                    // Update the userData with the new color name
-                    subCube.faces[faceDirection].userData.faceColorName = newColorName;
-                }
-            });
-        });
-    }
-
     rotateFace(moveCommand) {
         // reset rotation of group
         this.rotationGroup.rotation.set(0, 0, 0);

@@ -180,34 +180,26 @@ class SubCube {
 
     updateFaceColors() {
         for (const mesh of this.objGroup.children) {
-            // Assuming mesh is the face mesh and has userData indicating its orientation
-            const normal = new THREE.Vector3();
+            // todo: rays point in opposite direction for RIGHT and LEFT sides
+            const worldQuaternion = new THREE.Quaternion();
+            mesh.updateMatrixWorld(); // Update the mesh's world matrix
+            mesh.matrixWorld.decompose(new THREE.Vector3(), worldQuaternion, new THREE.Vector3()); // Decompose to get world quaternion
+            const worldRotation = new THREE.Euler().setFromQuaternion(worldQuaternion); // Convert quaternion to Euler
 
-            // Set the normal based on face orientation
-            // This is a simplified example; adjust based on your actual face orientation logic
-            switch (mesh.userData.faceIndex) {
-                // Assuming these faceIndex values correspond to your cube's faces
-                case FaceDirection.FRONT:
-                case FaceDirection.BACK:
-                    normal.set(0, 0, mesh.userData.faceIndex === FaceDirection.FRONT ? 1 : -1);
-                    break;
-                case FaceDirection.UP:
-                case FaceDirection.DOWN:
-                    normal.set(0, mesh.userData.faceIndex === FaceDirection.UP ? 1 : -1, 0);
-                    break;
-                case FaceDirection.RIGHT:
-                case FaceDirection.LEFT:
-                    normal.set(mesh.userData.faceIndex === FaceDirection.RIGHT ? 1 : -1, 0, 0);
-                    break;
-            }
+            const meshNormal = new THREE.Vector3(0, 0, 1);
+            meshNormal.applyEuler(worldRotation); // apply mesh rotation to vector
 
-            // Calculate the center of the face
-            // For simplicity, assuming the mesh's position is the center of the face
-            const center = mesh.position.clone();
+            const meshOrigin = new THREE.Vector3();  // todo: variable name
+            mesh.getWorldPosition(meshOrigin);
 
             // Perform raycasting from the center in the direction of the normal
-            const raycaster = new THREE.Raycaster(center, normal);
+            const raycaster = new THREE.Raycaster(meshOrigin, meshNormal);
             const intersects = raycaster.intersectObjects(this.scene.children, true);
+
+            // todo: remove
+            if (mesh.userData.faceIndex == FaceDirection.RIGHT) {
+                this.scene.add(new THREE.ArrowHelper(raycaster.ray.direction, raycaster.ray.origin, 5, 0x000000));
+            }
 
             // Process intersections
             if (intersects.length > 0) {
@@ -215,21 +207,17 @@ class SubCube {
                     if ('name' in intersects[isect].object.userData && intersects[isect].distance > 10) { // skybox is far away, so we ignore all near intersects...
                         console.log("Found intersect with " + intersects[isect].object.userData.name + " Skybox")
                         const name = intersects[isect].object.userData.name.toLowerCase();
-                        // mesh.material.color = new THREE.Color("grey")
 
                         this.faces[name] = mesh.userData.faceColorName
+                    }
+                    else {
+                        console.log("non skybox intersect");
                     }
                 }
             } else {
                 console.log('No intersections found.');
             }
         }
-    }
-
-    resetFacesToDefault() {
-        Object.keys(this.faces).forEach(face => {
-            this.faces[face] = null;
-        });
     }
 }
 
