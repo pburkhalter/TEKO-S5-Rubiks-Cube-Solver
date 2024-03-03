@@ -49,6 +49,9 @@ class SubCube {
             this.y + Math.sign(this.y) * cubeGap,
             this.z + Math.sign(this.z) * cubeGap
         );
+
+
+
     }
 
     createFace(index, faceColors, cubeSize) {
@@ -64,38 +67,40 @@ class SubCube {
         faceMesh.userData.faceColorName = color.name;
         faceMesh.userData.faceIndex = index;
         faceMesh.userData.parentSubCube = this;
+        faceMesh.userData.position = null;
 
         switch (index) {
             case FaceDirection.FRONT:
                 faceMesh.position.z = cubeSize / 2;
-                this.faces.front = color.name;
+                this.faces.front = faceMesh;
                 break;
             case FaceDirection.BACK:
                 faceMesh.position.z = -cubeSize / 2;
                 faceMesh.rotation.y = -Math.PI;
-                this.faces.back = color.name;
+                this.faces.back = faceMesh;
                 break;
             case FaceDirection.UP:
                 faceMesh.position.y = cubeSize / 2;
                 faceMesh.rotation.x = -Math.PI / 2;
-                this.faces.up = color.name;
+                this.faces.up = faceMesh;
                 break;
             case FaceDirection.DOWN:
                 faceMesh.position.y = -cubeSize / 2;
                 faceMesh.rotation.x = Math.PI / 2;
-                this.faces.down = color.name;
+                this.faces.down = faceMesh;
                 break;
             case FaceDirection.RIGHT:
                 faceMesh.position.x = cubeSize / 2;
                 faceMesh.rotation.y = Math.PI / 2;
-                this.faces.right = color.name;
+                this.faces.right = faceMesh;
                 break;
             case FaceDirection.LEFT:
                 faceMesh.position.x = -cubeSize / 2;
                 faceMesh.rotation.y = -Math.PI / 2;
-                this.faces.left = color.name;
+                this.faces.left = faceMesh;
                 break;
         }
+
 
         return faceMesh;
     }
@@ -187,8 +192,11 @@ class SubCube {
             let meshNormal = new THREE.Vector3(0, 0, 1);
             let arrowColor = mesh.userData.faceColorName;
 
+            let meshNormalInvert = new THREE.Vector3(0, 0, -1);
+
 
             meshNormal.applyEuler(worldRotation);
+            meshNormalInvert.applyEuler(worldRotation);
 
             const meshOrigin = new THREE.Vector3();
             mesh.getWorldPosition(meshOrigin);
@@ -197,17 +205,34 @@ class SubCube {
             const skyboxes = this.scene.children.filter(param => param.name === 'skybox');
             const intersects = raycaster.intersectObjects(skyboxes, true);
 
+            const raycasterSubBall = new THREE.Raycaster(meshOrigin, meshNormalInvert);
+            const subballs = this.scene.children.filter(param => param.name === 'subball');
+            const intersectsSubBall = raycasterSubBall.intersectObjects(subballs, true);
+
             if (intersects.length > 0) {
                 for (const intersect of intersects) {
                     console.log("Found intersect with " + intersect.object.userData.name + " Skybox");
                     const name = intersect.object.userData.name.toLowerCase();
 
-                    this.faces[name] = mesh.userData.faceColorName;
-
+                    this.faces[name] = mesh;
+                    mesh.userData.side = name
                 }
             } else {
                 console.log('No intersections found.');
             }
+
+            if (intersectsSubBall.length > 0) {
+                for (const intersect of intersectsSubBall) {
+                    const name = intersect.object.userData.name
+                    console.log("Found intersect with " + name + " SubBall");
+                    mesh.userData.position = name;
+                }
+            } else {
+                console.log('No intersections with subballs found.');
+            }
+
+            const arrowHelperInverted = new THREE.ArrowHelper(meshNormalInvert, meshOrigin, 5, 'purple');
+            this.scene.add(arrowHelperInverted);
 
             if (config.debug) {
                 if (mesh.userData.faceColorName == 'default') {
@@ -219,6 +244,8 @@ class SubCube {
                     this.scene.add(arrowHelper);
                 }
             }
+
+            console.log(mesh)
         }
     }
 }

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import config from '../config/config.json';
 import SubCube from './subcube'
+import SubBall from "./subBall";
 
 
 class Cube {
@@ -37,10 +38,22 @@ class Cube {
                 for (let z = -1; z < 2; z++) {
                     if (x === 0 && y === 0 && z === 0) continue;
 
+                    const subBall = new SubBall(x, y, z, this.config.cubeSize, this.config.cubeGap);
+                    this.scene.add(subBall.object);
+                }
+            }
+        }
+
+        for (let x = -1; x < 2; x++) {
+            for (let y = -1; y < 2; y++) {
+                for (let z = -1; z < 2; z++) {
+                    if (x === 0 && y === 0 && z === 0) continue;
+
                     const subCube = new SubCube(x, y, z, this.config.faceColors, this.config.cubeSize, this.config.cubeGap, this.scene);
+
                     this.masterGroup.add(subCube.objGroup);
 
-                    // Add subCube references to the logical groups
+                    // Add subCube references and vectors to the logical (shadow-) groups
                     if (x === -1) this.groups.L.push(subCube);
                     if (x === 1) this.groups.R.push(subCube);
                     if (y === -1) this.groups.D.push(subCube);
@@ -67,8 +80,13 @@ class Cube {
 
         for (const [groupName, group] of Object.entries(this.groups)) {
             for (const subCube of group) {
-                const faceColor = subCube.faces[this.faceMapping[groupName]];
-                cubeState[groupName].push(faceColor);
+                subCube.updateFaceColors();
+                for (const faceMesh of subCube.objGroup.children){
+                    if(faceMesh.userData.faceColorName != 'default'){
+                        console.log("Face:" + faceMesh.userData.faceColorName + " / " + faceMesh.userData.position + " / " + faceMesh.userData.side)
+                    }
+                }
+                //cubeState[groupName].push(faceColor);
             }
         }
 
