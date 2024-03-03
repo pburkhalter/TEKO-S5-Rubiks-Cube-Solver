@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import config from '../config/config.json';
 import {FaceDirection} from './face.js'
 
 class SubCube {
@@ -55,7 +56,7 @@ class SubCube {
         const faceGeometry = new THREE.PlaneGeometry(cubeSize, cubeSize);
         const faceMaterial = new THREE.MeshStandardMaterial({
             color: color.hex,
-            side: THREE.DoubleSide
+            //side: THREE.DoubleSide
         });
 
         const faceMesh = new THREE.Mesh(faceGeometry, faceMaterial);
@@ -71,7 +72,7 @@ class SubCube {
                 break;
             case FaceDirection.BACK:
                 faceMesh.position.z = -cubeSize / 2;
-                faceMesh.rotation.y = Math.PI;
+                faceMesh.rotation.y = -Math.PI;
                 this.faces.back = color.name;
                 break;
             case FaceDirection.UP:
@@ -86,12 +87,12 @@ class SubCube {
                 break;
             case FaceDirection.RIGHT:
                 faceMesh.position.x = cubeSize / 2;
-                faceMesh.rotation.y = -Math.PI / 2;
+                faceMesh.rotation.y = Math.PI / 2;
                 this.faces.right = color.name;
                 break;
             case FaceDirection.LEFT:
                 faceMesh.position.x = -cubeSize / 2;
-                faceMesh.rotation.y = Math.PI / 2;
+                faceMesh.rotation.y = -Math.PI / 2;
                 this.faces.left = color.name;
                 break;
         }
@@ -120,9 +121,6 @@ class SubCube {
                 break;
             case FaceDirection.LEFT:
                 colorValue = this.x === -1 ? faceColors.green : faceColors.default;
-                break;
-            default:
-                colorValue = faceColors.default;
                 break;
         }
 
@@ -180,42 +178,46 @@ class SubCube {
 
     updateFaceColors() {
         for (const mesh of this.objGroup.children) {
-            // todo: rays point in opposite direction for RIGHT and LEFT sides
+            mesh.updateMatrixWorld();
+
             const worldQuaternion = new THREE.Quaternion();
-            mesh.updateMatrixWorld(); // Update the mesh's world matrix
-            mesh.matrixWorld.decompose(new THREE.Vector3(), worldQuaternion, new THREE.Vector3()); // Decompose to get world quaternion
-            const worldRotation = new THREE.Euler().setFromQuaternion(worldQuaternion); // Convert quaternion to Euler
+            mesh.matrixWorld.decompose(new THREE.Vector3(), worldQuaternion, new THREE.Vector3());
+            const worldRotation = new THREE.Euler().setFromQuaternion(worldQuaternion);
 
-            const meshNormal = new THREE.Vector3(0, 0, 1);
-            meshNormal.applyEuler(worldRotation); // apply mesh rotation to vector
+            let meshNormal = new THREE.Vector3(0, 0, 1);
+            let arrowColor = mesh.userData.faceColorName;
 
-            const meshOrigin = new THREE.Vector3();  // todo: variable name
+
+            meshNormal.applyEuler(worldRotation);
+
+            const meshOrigin = new THREE.Vector3();
             mesh.getWorldPosition(meshOrigin);
 
-            // Perform raycasting from the center in the direction of the normal
             const raycaster = new THREE.Raycaster(meshOrigin, meshNormal);
-            const intersects = raycaster.intersectObjects(this.scene.children, true);
+            const skyboxes = this.scene.children.filter(param => param.name === 'skybox');
+            const intersects = raycaster.intersectObjects(skyboxes, true);
 
-            // todo: remove
-            if (mesh.userData.faceIndex == FaceDirection.RIGHT) {
-                this.scene.add(new THREE.ArrowHelper(raycaster.ray.direction, raycaster.ray.origin, 5, 0x000000));
-            }
-
-            // Process intersections
             if (intersects.length > 0) {
-                for (const isect in intersects) {
-                    if ('name' in intersects[isect].object.userData && intersects[isect].distance > 10) { // skybox is far away, so we ignore all near intersects...
-                        console.log("Found intersect with " + intersects[isect].object.userData.name + " Skybox")
-                        const name = intersects[isect].object.userData.name.toLowerCase();
+                for (const intersect of intersects) {
+                    console.log("Found intersect with " + intersect.object.userData.name + " Skybox");
+                    const name = intersect.object.userData.name.toLowerCase();
 
-                        this.faces[name] = mesh.userData.faceColorName
-                    }
-                    else {
-                        console.log("non skybox intersect");
-                    }
+                    this.faces[name] = mesh.userData.faceColorName;
+
                 }
             } else {
                 console.log('No intersections found.');
+            }
+
+            if (config.debug) {
+                if (mesh.userData.faceColorName == 'default') {
+                    // Visualize the normal with an ArrowHelper
+                    const arrowHelper = new THREE.ArrowHelper(meshNormal, meshOrigin, 5, 'black');
+                    this.scene.add(arrowHelper);
+                } else {
+                    const arrowHelper = new THREE.ArrowHelper(meshNormal, meshOrigin, 5, arrowColor);
+                    this.scene.add(arrowHelper);
+                }
             }
         }
     }
