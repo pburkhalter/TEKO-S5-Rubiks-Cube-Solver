@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import Cube from './cube.js';
+import config from '../config/config.json';
 
 
 export function initCube(scene) {
@@ -35,7 +36,8 @@ export function onMouseClick(event, scene, camera, renderer) {
             const faceIndex = firstIntersectedObject.userData.faceIndex;
             const subCube = firstIntersectedObject.userData.parentSubCube;
 
-            console.log(subCube.objGroup.position)
+            if (config.debug)
+                console.log(subCube.objGroup.position)
 
             subCube.changeFaceColor(faceIndex);
         }

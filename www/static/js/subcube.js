@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import config from '../config/config.json';
-import {FaceDirection} from './face.js'
+import { FaceDirection } from './face.js'
 
 class SubCube {
     constructor(x, y, z, faceColors, cubeSize, cubeGap, scene) {
@@ -49,21 +49,14 @@ class SubCube {
             this.y + Math.sign(this.y) * cubeGap,
             this.z + Math.sign(this.z) * cubeGap
         );
-
-
-
     }
 
     createFace(index, faceColors, cubeSize) {
         const color = this.getFaceColor(index, faceColors)
         const faceGeometry = new THREE.PlaneGeometry(cubeSize, cubeSize);
-        const faceMaterial = new THREE.MeshStandardMaterial({
-            color: color.hex,
-            //side: THREE.DoubleSide
-        });
+        const faceMaterial = new THREE.MeshStandardMaterial({ color: color.hex });
 
         const faceMesh = new THREE.Mesh(faceGeometry, faceMaterial);
-
         faceMesh.userData.faceColorName = color.name;
         faceMesh.userData.faceIndex = index;
         faceMesh.userData.parentSubCube = this;
@@ -100,7 +93,6 @@ class SubCube {
                 this.faces.left = faceMesh;
                 break;
         }
-
 
         return faceMesh;
     }
@@ -172,7 +164,7 @@ class SubCube {
             if (!cubeIsStatic) {
                 // Create a new material with the desired color and make it double-sided
                 // Replace the existing material of the face with the new material
-                faceMesh.material = new THREE.MeshStandardMaterial({ color: newFaceColor.hex});
+                faceMesh.material = new THREE.MeshStandardMaterial({ color: newFaceColor.hex });
                 faceMesh.userData.faceColorName = newFaceColor.name;
             }
             else {
@@ -190,10 +182,7 @@ class SubCube {
             const worldRotation = new THREE.Euler().setFromQuaternion(worldQuaternion);
 
             let meshNormal = new THREE.Vector3(0, 0, 1);
-            let arrowColor = mesh.userData.faceColorName;
-
             let meshNormalInvert = new THREE.Vector3(0, 0, -1);
-
 
             meshNormal.applyEuler(worldRotation);
             meshNormalInvert.applyEuler(worldRotation);
@@ -227,8 +216,6 @@ class SubCube {
                 console.log('No intersections with subballs found.');
             }
 
-
-
             if (config.debug) {
                 const arrowHelperInverted = new THREE.ArrowHelper(meshNormalInvert, meshOrigin, 5, 'purple');
                 this.scene.add(arrowHelperInverted);
@@ -238,7 +225,7 @@ class SubCube {
                     const arrowHelper = new THREE.ArrowHelper(meshNormal, meshOrigin, 5, 'black');
                     this.scene.add(arrowHelper);
                 } else {
-                    const arrowHelper = new THREE.ArrowHelper(meshNormal, meshOrigin, 5, arrowColor);
+                    const arrowHelper = new THREE.ArrowHelper(meshNormal, meshOrigin, 5, mesh.userData.faceColorName);
                     this.scene.add(arrowHelper);
                 }
             }

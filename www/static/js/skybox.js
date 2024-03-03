@@ -39,7 +39,7 @@ export class Skybox {
             transparent: true,
             opacity: 0
         });
-        if(config.debug){
+        if (config.debug) {
             faceMaterial.transparent = false;
             faceMaterial.opacity = 1;
         }

@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 
 class SubBall {
-    constructor(x, y, z, sphereRadius, gap) {
+    constructor(x, y, z, sphereRadius) {
         // Create geometry and material for the sphere (ball)
-        const geometry = new THREE.SphereGeometry(sphereRadius / 5, 32, 32); // SphereGeometry(radius, widthSegments, heightSegments)
-        const material = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Red color
+        const geometry = new THREE.SphereGeometry(sphereRadius / 5, 32, 32);
+        const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
         // Create a mesh using the geometry and material and assign it to this.object
         this.object = new THREE.Mesh(geometry, material);

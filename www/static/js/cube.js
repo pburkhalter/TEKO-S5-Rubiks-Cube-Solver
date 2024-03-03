@@ -39,7 +39,7 @@ class Cube {
                 for (let z = -1; z < 2; z++) {
                     if (x === 0 && y === 0 && z === 0) continue;
 
-                    const subBall = new SubBall(x, y, z, this.config.cubeSize, this.config.cubeGap);
+                    const subBall = new SubBall(x, y, z, this.config.cubeSize);
                     this.scene.add(subBall.object);
                 }
             }
@@ -85,11 +85,11 @@ class Cube {
                         const alreadyExists = cubeState.some(item => JSON.stringify(item) === currentItem);
 
                         if (!alreadyExists) {
-                            if (faceMesh.userData.position) {  // todo: fix null entry
+                            if (faceMesh.userData.position) {
                                 const faceListIndex = cubeStateMapping[faceMesh.userData.position][faceMesh.userData.side.toUpperCase()];
                                 cubeState[faceListIndex] = faceMesh.userData.faceColorName[0];  // only store first letter of color
                             }
-                            else { // todo: fix ray casting for this face
+                            else { // todo: fix ray casting for this face with position null
                                 cubeState[cubeStateMapping["0.-1.0"][faceMesh.userData.side.toUpperCase()]] = faceMesh.userData.faceColorName[0]
                             }
                         }
