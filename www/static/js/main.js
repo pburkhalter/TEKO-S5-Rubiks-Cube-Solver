@@ -4,19 +4,18 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { initCube, animateCube, onMouseClick } from './controls.js';
-import {initSteps, convertToMove, convertMovesToSteps} from './steps.js';
+import {initSteps} from './steps.js';
 import config from '../config/config.json';
 import { Skybox } from './skybox';
 
+let scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true }); // Enable anti-aliasing
 const composer = new EffectComposer(renderer);
 const controls = new OrbitControls(camera, renderer.domElement);
-
-let scene = new THREE.Scene();
+const skyBox = new Skybox(scene);  // eslint-disable-line no-unused-vars
 let cube = initCube(scene);
 let steps_state = initSteps();
-const skyBox = new Skybox(scene);  // eslint-disable-line no-unused-vars
 
 // todo: assign actual functions once possible
 document.getElementById("start").addEventListener("click", () => {
