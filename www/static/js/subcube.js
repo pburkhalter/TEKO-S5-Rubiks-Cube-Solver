@@ -205,10 +205,6 @@ class SubCube {
             const skyboxes = this.scene.children.filter(param => param.name === 'skybox');
             const intersects = raycaster.intersectObjects(skyboxes, true);
 
-            const raycasterSubBall = new THREE.Raycaster(meshOrigin, meshNormalInvert);
-            const subballs = this.scene.children.filter(param => param.name === 'subball');
-            const intersectsSubBall = raycasterSubBall.intersectObjects(subballs, true);
-
             if (intersects.length > 0) {
                 for (const intersect of intersects) {
                     const name = intersect.object.userData.name.toLowerCase();
@@ -220,11 +216,13 @@ class SubCube {
                 console.log('No intersections found.');
             }
 
+            const raycasterSubBall = new THREE.Raycaster(meshOrigin, meshNormalInvert);
+            const subballs = this.scene.children.filter(param => param.name === 'subball');
+            const intersectsSubBall = raycasterSubBall.intersectObjects(subballs, true);
+
             if (intersectsSubBall.length > 0) {
-                for (const intersect of intersectsSubBall) {
-                    const name = intersect.object.userData.name
-                    mesh.userData.position = name;
-                }
+                const name = intersectsSubBall[0].object.userData.name  // ball inside cube will be hit first
+                mesh.userData.position = name;
             } else {
                 console.log('No intersections with subballs found.');
             }
