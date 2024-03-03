@@ -89,6 +89,9 @@ class Cube {
                                 const faceListIndex = cubeStateMapping[faceMesh.userData.position][faceMesh.userData.side.toUpperCase()];
                                 cubeState[faceListIndex] = faceMesh.userData.faceColorName[0];  // only store first letter of color
                             }
+                            else { // todo: fix ray casting for this face
+                                cubeState[cubeStateMapping["0.-1.0"][faceMesh.userData.side.toUpperCase()]] = faceMesh.userData.faceColorName[0]
+                            }
                         }
                     }
                 }
