@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import config from '../config/config.json';
+import cubeStateMapping from '../config/cubeStateMapping.json';
 import SubCube from './subcube'
 import SubBall from "./subBall";
 
@@ -69,40 +70,32 @@ class Cube {
 
     // Method to get the current state of the Rubik's Cube
     getCubeState() {
-        const cubeState = {
-            U: [],  // Up face
-            D: [],  // Down face
-            L: [],  // Left face
-            R: [],  // Right face
-            F: [],  // Front face
-            B: []   // Back face
-        };
+        let cubeState = new Array(54);
 
-        const cubeThingy = []
-
-        for (const [groupName, group] of Object.entries(this.groups)) {
+        for (const group of Object.values(this.groups)) {
             for (const subCube of group) {
                 subCube.updateFaceColors();
+
                 for (const faceMesh of subCube.objGroup.children) {
                     if (faceMesh.userData.faceColorName !== 'default') {
                         // Create a string representation of the current item
                         const currentItem = JSON.stringify([faceMesh.userData.faceColorName, faceMesh.userData.side, faceMesh.userData.position]);
 
-                        // Check if the array already contains an item with the same string representation
-                        const alreadyExists = cubeThingy.some(item => JSON.stringify(item) === currentItem);
+                        // Check if the array already contains an identical item as most faces share a subCube
+                        const alreadyExists = cubeState.some(item => JSON.stringify(item) === currentItem);
 
-                        // If it does not exist, push the original array (not the string) into cubeThingy
                         if (!alreadyExists) {
-                            cubeThingy.push([faceMesh.userData.faceColorName, faceMesh.userData.side, faceMesh.userData.position]);
+                            if (faceMesh.userData.position) {  // todo: fix null entry
+                                const faceListIndex = cubeStateMapping[faceMesh.userData.position][faceMesh.userData.side.toUpperCase()];
+                                cubeState[faceListIndex] = faceMesh.userData.faceColorName[0];  // only store first letter of color
+                            }
                         }
                     }
                 }
-                //cubeState[groupName].push(faceColor);
             }
         }
 
-        console.log(cubeThingy)
-        return cubeState;
+        return cubeState.join("").toUpperCase();
     }
 
     rotateFace(moveCommand) {
