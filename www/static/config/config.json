@@ -1,5 +1,5 @@
 {
-  "debug": true,
+  "debug": false,
 
   "cubeSize": 1.0,
   "cubeGap": 0.05,

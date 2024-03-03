@@ -78,18 +78,30 @@ class Cube {
             B: []   // Back face
         };
 
+        const cubeThingy = []
+
         for (const [groupName, group] of Object.entries(this.groups)) {
             for (const subCube of group) {
                 subCube.updateFaceColors();
-                for (const faceMesh of subCube.objGroup.children){
-                    if(faceMesh.userData.faceColorName != 'default'){
-                        console.log("Face:" + faceMesh.userData.faceColorName + " / " + faceMesh.userData.position + " / " + faceMesh.userData.side)
+                for (const faceMesh of subCube.objGroup.children) {
+                    if (faceMesh.userData.faceColorName !== 'default') {
+                        // Create a string representation of the current item
+                        const currentItem = JSON.stringify([faceMesh.userData.faceColorName, faceMesh.userData.side, faceMesh.userData.position]);
+
+                        // Check if the array already contains an item with the same string representation
+                        const alreadyExists = cubeThingy.some(item => JSON.stringify(item) === currentItem);
+
+                        // If it does not exist, push the original array (not the string) into cubeThingy
+                        if (!alreadyExists) {
+                            cubeThingy.push([faceMesh.userData.faceColorName, faceMesh.userData.side, faceMesh.userData.position]);
+                        }
                     }
                 }
                 //cubeState[groupName].push(faceColor);
             }
         }
 
+        console.log(cubeThingy)
         return cubeState;
     }
 
@@ -164,7 +176,6 @@ class Cube {
 
         // dissolve the group
         while (this.rotationGroup.children.length > 0) {
-            console.log("Processing new subCube...")
             const child = this.rotationGroup.children[0]
 
             child.userData.subCubeInstance.updateFaceColors();

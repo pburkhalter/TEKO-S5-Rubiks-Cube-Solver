@@ -16,7 +16,6 @@ class SubBall {
         this.object.userData.subBallInstance = this;
 
         this.object.userData.name = `${x}.${y}.${z}`
-        console.log(this.object.userData.name)
 
         // Correctly set the position of the object
         this.object.position.set(x, y, z);

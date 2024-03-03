@@ -172,7 +172,7 @@ class SubCube {
             if (!cubeIsStatic) {
                 // Create a new material with the desired color and make it double-sided
                 // Replace the existing material of the face with the new material
-                faceMesh.material = new THREE.MeshStandardMaterial({ color: newFaceColor.hex, side: THREE.DoubleSide });
+                faceMesh.material = new THREE.MeshStandardMaterial({ color: newFaceColor.hex});
                 faceMesh.userData.faceColorName = newFaceColor.name;
             }
             else {
@@ -211,7 +211,6 @@ class SubCube {
 
             if (intersects.length > 0) {
                 for (const intersect of intersects) {
-                    console.log("Found intersect with " + intersect.object.userData.name + " Skybox");
                     const name = intersect.object.userData.name.toLowerCase();
 
                     this.faces[name] = mesh;
@@ -224,17 +223,18 @@ class SubCube {
             if (intersectsSubBall.length > 0) {
                 for (const intersect of intersectsSubBall) {
                     const name = intersect.object.userData.name
-                    console.log("Found intersect with " + name + " SubBall");
                     mesh.userData.position = name;
                 }
             } else {
                 console.log('No intersections with subballs found.');
             }
 
-            const arrowHelperInverted = new THREE.ArrowHelper(meshNormalInvert, meshOrigin, 5, 'purple');
-            this.scene.add(arrowHelperInverted);
+
 
             if (config.debug) {
+                const arrowHelperInverted = new THREE.ArrowHelper(meshNormalInvert, meshOrigin, 5, 'purple');
+                this.scene.add(arrowHelperInverted);
+
                 if (mesh.userData.faceColorName == 'default') {
                     // Visualize the normal with an ArrowHelper
                     const arrowHelper = new THREE.ArrowHelper(meshNormal, meshOrigin, 5, 'black');
@@ -245,7 +245,6 @@ class SubCube {
                 }
             }
 
-            console.log(mesh)
         }
     }
 }
