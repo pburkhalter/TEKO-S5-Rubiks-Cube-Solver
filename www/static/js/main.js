@@ -4,19 +4,16 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { initCube, animateCube, onMouseClick } from './controls.js';
-import {initSteps, convertToMove, convertMovesToSteps} from './steps.js';
+import {initSteps, convertMovesToSteps} from './steps.js';
 import config from '../config/config.json';
 import { Skybox } from './skybox';
 
-const scene = new THREE.Scene();
+let scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true }); // Enable anti-aliasing
 const composer = new EffectComposer(renderer);
 const controls = new OrbitControls(camera, renderer.domElement);
 const skyBox = new Skybox(scene);  // eslint-disable-line no-unused-vars
-const cube = initCube(scene);
-
-let scene = new THREE.Scene();
 let cube = initCube(scene);
 let steps_state = initSteps(convertMovesToSteps(["L", "R"]));
 
@@ -75,46 +72,15 @@ document.getElementById("reset").addEventListener("click", () => {
 // U = blue
 
 document.getElementById("solve").addEventListener("click", () => {
-    let cube_state = cube.getCubeState();
-    let names = Object.getOwnPropertyNames(cube_state);
-
-    let map = {}
-    names.map(name => cube_state[name].map(mapFrontend2Backend).join("")).forEach(face => {
-        map[face[4]] = face
-    });
-
-    let cube_str = map["W"] + map["R"] + map["G"] + map["Y"] + map["O"] + map["B"];
-    //console.log(JSON.stringify(cube_str));
-
-    let moves = wasm.solve_cube(cube_str);
+    const cube_str = cube.getCubeState();
+    console.log(cube_str);
+    const moves = wasm.solve_cube(cube_str);
     //console.log(JSON.stringify(moves));
-
-    let steps = convertMovesToSteps(moves.map(convertToMove));
+    console.log(moves);
+    let steps = convertMovesToSteps(moves);
+    console.log(steps);
     steps_state.setSteps(steps);
 });
-
-function mapFrontend2Backend(color){
-    if (color === "green") {
-        return "G"
-    }
-    if (color === "orange") {
-        return "O"
-    }
-    if (color === "red") {
-        return "R"
-    }
-    if (color === "yellow") {
-        return "Y"
-    }
-    if (color === "white") {
-        return "W"
-    }
-    if (color === "blue") {
-        return "B"
-    }
-    throw new Error("The color name: '" + color + "' is invalid")
-}
-
 
 
 function onWindowResize() {

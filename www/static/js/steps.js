@@ -1,4 +1,4 @@
-const Move = {
+export const Move = {
     U: "U",
     UP: "U'",
     U2: "U2",
@@ -22,14 +22,6 @@ const Move = {
     B: "B",
     BP: "B'",
     B2: "B2",
-}
-
-export function convertToMove(input){
-    if (Object.prototype.hasOwnProperty.call(Move, input)) {
-        return Move[input];
-    } else {
-        return "Invalid move";
-    }
 }
 
 
