@@ -66,43 +66,11 @@ document.getElementById("reset").addEventListener("click", () => {
 // U = blue
 
 document.getElementById("solve").addEventListener("click", () => {
-    let cube_state = cube.getCubeState();
-    let names = Object.getOwnPropertyNames(cube_state);
-
-    let map = {}
-    names.map(name => cube_state[name].map(mapFrontend2Backend).join("")).forEach(face => {
-        map[face[4]] = face
-    });
-
-    let cube_str = map["W"] + map["R"] + map["G"] + map["Y"] + map["O"] + map["B"];
-    //console.log(JSON.stringify(cube_str));
-
-    let steps = wasm.solve_cube(cube_str);
+    const cube_state = cube.getCubeState();
+    const steps = wasm.solve_cube(cube_state);
     console.log(JSON.stringify(steps));
     steps_state.setSteps(steps);
 });
-
-function mapFrontend2Backend(color){
-    if (color === "green") {
-        return "G"
-    }
-    if (color === "orange") {
-        return "O"
-    }
-    if (color === "red") {
-        return "R"
-    }
-    if (color === "yellow") {
-        return "Y"
-    }
-    if (color === "white") {
-        return "W"
-    }
-    if (color === "blue") {
-        return "B"
-    }
-    throw new Error("The color name: '" + color + "' is invalid")
-}
 
 
 
