@@ -21,7 +21,10 @@ let steps_state = initSteps();
 document.getElementById("start").addEventListener("click", () => {
     let moves = null;
     while ((moves = steps_state.undo()) != null) {
-        moves.forEach(move => cube.rotateFace(move));
+        moves.forEach(move => {
+            cube.rotateFace(move);
+            setActiveStep(steps_state)
+        });
     }
 });
 document.getElementById("prev").addEventListener("click", () => {
@@ -29,13 +32,19 @@ document.getElementById("prev").addEventListener("click", () => {
     if (moves == null) {
         return;
     }
-    moves.forEach(move => cube.rotateFace(move));
+    moves.forEach(move => {
+        cube.rotateFace(move);
+        setActiveStep(steps_state);
+    });
 });
-document.getElementById("playPause").addEventListener("click", () => {
+document.getElementById("playPause").addEventListener("click", async () => {
     //ToDo add a pause function
     let move = null;
     while((move = steps_state.do()) != null){
+        await new Promise(resolve => setTimeout(resolve, config.timeout));
+
         cube.rotateFace(move);
+        setActiveStep(steps_state);
     }
 });
 document.getElementById("next").addEventListener("click", () => {
@@ -44,11 +53,13 @@ document.getElementById("next").addEventListener("click", () => {
         return;
     }
     cube.rotateFace(move);
+    setActiveStep(steps_state);
 });
 document.getElementById("end").addEventListener("click", () => {
     let move = null;
     while((move = steps_state.do()) != null){
         cube.rotateFace(move);
+        setActiveStep(steps_state);
     }
 });
 document.getElementById("reset").addEventListener("click", () => {

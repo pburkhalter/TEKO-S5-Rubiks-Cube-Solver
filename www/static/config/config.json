@@ -1,5 +1,6 @@
 {
   "debug": false,
+  "timeout": 500,
 
   "cubeSize": 1.0,
   "cubeGap": 0.05,
