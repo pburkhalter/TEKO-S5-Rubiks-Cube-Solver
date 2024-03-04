@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { initCube, animateCube, onMouseClick } from './controls.js';
-import {initSteps, convertToMove, convertMovesToSteps} from './steps.js';
+import {initSteps, convertMovesToSteps} from './steps.js';
 import { Skybox } from './skybox';
 import config from '../config/config.json';
 
