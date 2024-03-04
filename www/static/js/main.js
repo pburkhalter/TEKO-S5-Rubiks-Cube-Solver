@@ -21,6 +21,12 @@ document.getElementById("end").addEventListener("click", () => { cube.rotateFace
 document.getElementById("reset").addEventListener("click", () => { cube.rotateFace("u'"); });
 
 
+document.getElementById("show").addEventListener("click", () => {
+    const cube_state = cube.getCubeState();
+    console.log(cube_state);
+});
+
+
 function onWindowResize() {
     // Update the camera's aspect ratio
     camera.aspect = window.innerWidth / window.innerHeight;
