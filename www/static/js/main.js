@@ -4,11 +4,11 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { initCube, animateCube, onMouseClick } from './controls.js';
-import {initSteps} from './steps.js';
-import config from '../config/config.json';
+import {initSteps, convertToMove, convertMovesToSteps} from './steps.js';
 import { Skybox } from './skybox';
+import config from '../config/config.json';
 
-let scene = new THREE.Scene();
+const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true }); // Enable anti-aliasing
 const composer = new EffectComposer(renderer);
@@ -21,7 +21,7 @@ let steps_state = initSteps();
 document.getElementById("start").addEventListener("click", () => {
     let moves = null;
     while ((moves = steps_state.undo()) != null) {
-        moves.forEach(cube.rotateFace);
+        moves.forEach(move => cube.rotateFace(move));
     }
 });
 document.getElementById("prev").addEventListener("click", () => {
@@ -29,7 +29,7 @@ document.getElementById("prev").addEventListener("click", () => {
     if (moves == null) {
         return;
     }
-    moves.forEach(cube.rotateFace);
+    moves.forEach(move => cube.rotateFace(move));
 });
 document.getElementById("playPause").addEventListener("click", () => {
     //ToDo add a pause function
@@ -52,7 +52,6 @@ document.getElementById("end").addEventListener("click", () => {
     }
 });
 document.getElementById("reset").addEventListener("click", () => {
-    scene = new THREE.Scene();
     cube = initCube(scene);
     steps_state = initSteps();
 });
@@ -66,11 +65,41 @@ document.getElementById("reset").addEventListener("click", () => {
 
 document.getElementById("solve").addEventListener("click", () => {
     const cube_state = cube.getCubeState();
-    const steps = wasm.solve_cube(cube_state);
-    console.log(JSON.stringify(steps));
+    const moves = wasm.solve_cube(cube_state);
+    const steps = convertMovesToSteps(moves);
     steps_state.setSteps(steps);
+
+    const steps_span = document.getElementById('steps');
+    steps_state.steps.forEach(step => {
+        const step_span = document.createElement('span');
+        step_span.innerText = step.move;
+        steps_span.appendChild(step_span);
+    });
+
+    setActiveStep(steps_state);
+
+    if(config.debug) {
+        console.log(JSON.stringify(steps));
+    }
 });
 
+
+
+document.getElementById("show").addEventListener("click", () => {
+    const cube_state = cube.getCubeState();
+    console.log(cube_state);
+});
+
+function setActiveStep(steps_state){
+    const steps_span = document.getElementById('steps');
+
+    const children = Array.from(steps_span.children);
+    children.forEach(child => child.classList.remove('step-active'));
+
+    if (steps_span.children[steps_state.index]){
+        steps_span.children[steps_state.index].classList.add('step-active');
+    }
+}
 
 
 function onWindowResize() {
