@@ -102,7 +102,6 @@ class Cube {
     }
 
     rotateFace(moveCommand) {
-        console.log(moveCommand);
         // reset rotation of group
         this.rotationGroup.rotation.set(0, 0, 0);
 
