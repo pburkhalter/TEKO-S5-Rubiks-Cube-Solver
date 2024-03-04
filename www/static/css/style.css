@@ -8,3 +8,7 @@ body {
     padding: 8px 16px;
     width: 50px;
 }
+
+.step-active {
+    color: red;
+}
