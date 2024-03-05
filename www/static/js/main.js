@@ -15,7 +15,7 @@ const composer = new EffectComposer(renderer);
 const controls = new OrbitControls(camera, renderer.domElement);
 const skyBox = new Skybox(scene);  // eslint-disable-line no-unused-vars
 let cube = initCube(scene);
-let steps_state = initSteps();
+let steps_state = initSteps(convertMovesToSteps(["L", "R", "U2", "R'"]));
 
 // todo: assign actual functions once possible
 document.getElementById("start").addEventListener("click", () => {
