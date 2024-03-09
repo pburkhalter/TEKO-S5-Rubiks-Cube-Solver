@@ -10,7 +10,6 @@ use crate::{
     cube::Cube,
     moves::{Direction, Move, Position},
 };
-/// The Rubik cube on the sub cube level; described by 8 corner sub cube, 12 edge sub cube and the sub cube orientations.
 
 #[derive(Serialize_repr, Deserialize_repr, Debug, Copy, Clone, Hash, Eq, PartialEq)]
 #[repr(u8)]

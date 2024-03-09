@@ -6,8 +6,6 @@ use crate::{
     moves::Move,
 };
 
-/// The Rubik cube on the facelet level; described by positions of the coloured stickers.
-
 #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq)]
 #[repr(u8)]
 enum Colour {
